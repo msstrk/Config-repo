@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-namespaces
+  namespace: test-namespace
+  labels:
+    app: test-namespace
+  annotations:
+    # Container Image Automated Updates
+    flux.weave.works/automated: "true"
+    # do not apply this manifest on the cluster
+    #flux.weave.works/ignore: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-namespaces
+  template:
+    metadata:
+      labels:
+        app: test-namespace
+    spec:
+      containers:
+      - name: test-namespace
+        image: 100334180700.dkr.ecr.us-west-2.amazonaws.com/sourcerepo:6df79d24
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
